@@ -1,0 +1,549 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================ */
+/*  THEME TOKENS                                                */
+/*  Default = dark.  .light = light theme override.             */
+/* ============================================================ */
+
+:root,
+:root.dark {
+  --bg: #030014;
+  --fg-rgb: 240 240 255;
+  --muted-rgb: 156 163 200;
+  --surface-rgb: 255 255 255; /* inverted-fg used with alpha */
+  --border-rgb: 255 255 255;
+  --grid-line: 120 130 200;
+  --grid-alpha: 0.07;
+  --dot-line: 170 180 240;
+  --dot-alpha: 0.18;
+  --glow-alpha: 1;
+  --noise-blend: overlay;
+  --scrollbar-thumb: linear-gradient(180deg, #1a1a3a, #11112a);
+  --scrollbar-track: #030014;
+  --selection-bg: rgba(34, 211, 238, 0.32);
+  --selection-fg: #ffffff;
+  --ring-cyan: rgba(34, 211, 238, 0.4);
+  color-scheme: dark;
+}
+
+:root.light {
+  --bg: #f5f6fb;
+  --fg-rgb: 12 12 36;
+  --muted-rgb: 80 88 115;
+  --surface-rgb: 12 12 36; /* dark ink, used with low alpha on white */
+  --border-rgb: 12 12 36;
+  --grid-line: 80 90 140;
+  --grid-alpha: 0.05;
+  --dot-line: 70 80 130;
+  --dot-alpha: 0.12;
+  --glow-alpha: 0.55;
+  --noise-blend: multiply;
+  --scrollbar-thumb: linear-gradient(180deg, #d4d8e6, #b8bdd0);
+  --scrollbar-track: #eef0f6;
+  --selection-bg: rgba(34, 211, 238, 0.28);
+  --selection-fg: #0a0a1e;
+  color-scheme: light;
+}
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  html,
+  body {
+    background-color: var(--bg);
+    color: rgb(var(--fg-rgb));
+    font-feature-settings: "ss01", "cv11", "cv02";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  ::selection {
+    background: var(--selection-bg);
+    color: var(--selection-fg);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 8px;
+    border: 2px solid var(--scrollbar-track);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #22d3ee, #a855f7);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring-cyan);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* Disable smooth scroll for users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  /* Custom cursor: hide native everywhere except text inputs so users
+     still get an I-beam where it matters. */
+  html.with-custom-cursor,
+  html.with-custom-cursor *,
+  html.with-custom-cursor *::before,
+  html.with-custom-cursor *::after {
+    cursor: none !important;
+  }
+  html.with-custom-cursor input,
+  html.with-custom-cursor textarea,
+  html.with-custom-cursor [contenteditable="true"] {
+    cursor: text !important;
+  }
+}
+
+/* ============================================================ */
+/*  Semantic utility classes                                    */
+/* ============================================================ */
+
+@layer utilities {
+  .bg-app {
+    background-color: var(--bg);
+  }
+  .text-fg {
+    color: rgb(var(--fg-rgb));
+  }
+  .text-muted {
+    color: rgb(var(--muted-rgb));
+  }
+
+  .border-soft {
+    border-color: rgb(var(--border-rgb) / 0.06);
+  }
+  .hover-bg-surface:hover {
+    background-color: rgb(var(--surface-rgb) / 0.06);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-gradient-cyber {
+    background: linear-gradient(120deg, var(--gc-start, #ffffff) 0%, var(--gc-mid, #c5d9ff) 35%, #22d3ee 65%, #a855f7 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-gradient-mono {
+    background: linear-gradient(180deg, var(--gm-start, #ffffff) 0%, var(--gm-end, #a5b3d3) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(rgb(var(--grid-line) / var(--grid-alpha)) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--grid-line) / var(--grid-alpha)) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .bg-grid-sm {
+    background-image:
+      linear-gradient(rgb(var(--grid-line) / calc(var(--grid-alpha) * 0.85)) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--grid-line) / calc(var(--grid-alpha) * 0.85)) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .bg-dot {
+    background-image: radial-gradient(rgb(var(--dot-line) / var(--dot-alpha)) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  .mask-radial {
+    -webkit-mask-image: radial-gradient(ellipse at center, black 35%, transparent 75%);
+    mask-image: radial-gradient(ellipse at center, black 35%, transparent 75%);
+  }
+
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(180deg, black 60%, transparent 100%);
+    mask-image: linear-gradient(180deg, black 60%, transparent 100%);
+  }
+
+  .glass {
+    background: rgb(var(--surface-rgb) / 0.04);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid rgb(var(--border-rgb) / 0.06);
+  }
+
+  .glass-strong {
+    background: rgb(var(--surface-rgb) / 0.06);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid rgb(var(--border-rgb) / 0.08);
+  }
+
+  @keyframes spin-slow {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .animate-spin-slow {
+    animation: spin-slow 16s linear infinite;
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .lift {
+    transition: transform 350ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 350ms;
+  }
+  .lift:hover {
+    transform: translateY(-4px);
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Performance helpers
+     ─────────────────────────────────────────────────────────────────
+     `cv-auto` enables `content-visibility: auto` so the browser skips
+     layout / paint / style for off-screen sections, and lets CSS
+     animations + JS RAFs inside them coast at near-zero cost until
+     they enter the viewport. `contain-intrinsic-size` reserves the
+     approximate height so the scrollbar doesn't jump.
+     `gpu` and `contain-paint` are opt-in hints for elements that
+     animate transforms a lot. */
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 800px;
+  }
+  .cv-auto-lg {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1100px;
+  }
+  .contain-paint {
+    contain: layout style paint;
+  }
+
+  /* Mask: horizontal fade (used for marquee + scroll containers) */
+  .mask-fade-h {
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+  }
+
+  /* AI image stylized tile backgrounds (CSS-generated "AI art") */
+  .ai-tile-1 {
+    background:
+      radial-gradient(circle at 30% 25%, rgba(168, 85, 247, 0.95), transparent 45%),
+      radial-gradient(circle at 75% 65%, rgba(34, 211, 238, 0.85), transparent 45%),
+      radial-gradient(circle at 60% 90%, rgba(236, 72, 153, 0.7), transparent 55%),
+      linear-gradient(135deg, #1a0a3a, #050015 70%);
+  }
+  .ai-tile-2 {
+    background:
+      conic-gradient(from 220deg at 50% 40%, rgba(34, 211, 238, 0.9), rgba(59, 130, 246, 0.5), rgba(168, 85, 247, 0.7), transparent 65%),
+      radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.5), transparent 50%),
+      linear-gradient(180deg, #050a2a, #02000a);
+  }
+  .ai-tile-3 {
+    background:
+      radial-gradient(ellipse at 50% 110%, rgba(244, 114, 182, 0.85), transparent 55%),
+      radial-gradient(ellipse at 50% 0%, rgba(56, 189, 248, 0.85), transparent 60%),
+      linear-gradient(180deg, #1d0a3a, #06031a 70%);
+  }
+  .ai-tile-4 {
+    background:
+      radial-gradient(circle at 40% 50%, rgba(244, 63, 94, 0.55), transparent 40%),
+      radial-gradient(circle at 70% 30%, rgba(251, 191, 36, 0.65), transparent 45%),
+      conic-gradient(from 140deg at 30% 70%, rgba(168, 85, 247, 0.6), transparent 60%),
+      linear-gradient(150deg, #1a0810, #05010a);
+  }
+}
+
+/* Stream cursor keyframe used in playground */
+@keyframes stream-cursor {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+.animate-stream-cursor {
+  animation: stream-cursor 1s ease-in-out infinite;
+}
+
+/* Energy flow particles ride an offset-path */
+@keyframes drift-along {
+  from {
+    offset-distance: 0%;
+  }
+  to {
+    offset-distance: 100%;
+  }
+}
+.drift-along {
+  animation: drift-along var(--drift-dur, 4s) linear var(--drift-delay, 0s) infinite;
+}
+
+/* ============================================================ */
+/*  LIGHT-MODE OVERRIDES                                        */
+/*  These map all the dark-mode hardcoded utility classes used  */
+/*  across components to inverted equivalents in light theme.   */
+/* ============================================================ */
+
+:root.light {
+  /* Adjust text gradient ends for light backgrounds */
+  --gc-start: #0a1230;
+  --gc-mid: #1a3070;
+  --gm-start: #0a0a25;
+  --gm-end: #4b5275;
+}
+
+/* --- backgrounds (white-alpha → ink-alpha) --- */
+:root.light .bg-white\/\[0\.01\] {
+  background-color: rgba(15, 16, 38, 0.025);
+}
+:root.light .bg-white\/\[0\.015\] {
+  background-color: rgba(15, 16, 38, 0.03);
+}
+:root.light .bg-white\/\[0\.02\] {
+  background-color: rgba(15, 16, 38, 0.035);
+}
+:root.light .bg-white\/\[0\.025\] {
+  background-color: rgba(15, 16, 38, 0.04);
+}
+:root.light .bg-white\/\[0\.03\] {
+  background-color: rgba(15, 16, 38, 0.05);
+}
+:root.light .bg-white\/\[0\.04\] {
+  background-color: rgba(15, 16, 38, 0.06);
+}
+:root.light .bg-white\/\[0\.05\] {
+  background-color: rgba(15, 16, 38, 0.07);
+}
+:root.light .bg-white\/\[0\.06\] {
+  background-color: rgba(15, 16, 38, 0.08);
+}
+:root.light .bg-white\/\[0\.07\] {
+  background-color: rgba(15, 16, 38, 0.09);
+}
+:root.light .bg-white\/\[0\.08\] {
+  background-color: rgba(15, 16, 38, 0.10);
+}
+:root.light .bg-white\/10 {
+  background-color: rgba(15, 16, 38, 0.10);
+}
+:root.light .bg-white\/15 {
+  background-color: rgba(15, 16, 38, 0.13);
+}
+:root.light .bg-white\/30 {
+  background-color: rgba(15, 16, 38, 0.30);
+}
+
+/* --- borders --- */
+:root.light .border-white\/\[0\.04\] {
+  border-color: rgba(15, 16, 38, 0.08);
+}
+:root.light .border-white\/\[0\.05\] {
+  border-color: rgba(15, 16, 38, 0.09);
+}
+:root.light .border-white\/\[0\.06\] {
+  border-color: rgba(15, 16, 38, 0.10);
+}
+:root.light .border-white\/\[0\.07\] {
+  border-color: rgba(15, 16, 38, 0.11);
+}
+:root.light .border-white\/\[0\.08\] {
+  border-color: rgba(15, 16, 38, 0.12);
+}
+:root.light .border-white\/\[0\.12\] {
+  border-color: rgba(15, 16, 38, 0.16);
+}
+:root.light .border-white\/10 {
+  border-color: rgba(15, 16, 38, 0.13);
+}
+:root.light .border-white\/15 {
+  border-color: rgba(15, 16, 38, 0.18);
+}
+:root.light .border-white\/20 {
+  border-color: rgba(15, 16, 38, 0.22);
+}
+:root.light .border-white\/30 {
+  border-color: rgba(15, 16, 38, 0.30);
+}
+
+/* --- text colors (full opacity = ink, with same alphas) --- */
+:root.light .text-white {
+  color: #0a0a1e;
+}
+:root.light .text-white\/25 {
+  color: rgba(15, 16, 38, 0.45);
+}
+:root.light .text-white\/30 {
+  color: rgba(15, 16, 38, 0.5);
+}
+:root.light .text-white\/35 {
+  color: rgba(15, 16, 38, 0.55);
+}
+:root.light .text-white\/40 {
+  color: rgba(15, 16, 38, 0.55);
+}
+:root.light .text-white\/45 {
+  color: rgba(15, 16, 38, 0.6);
+}
+:root.light .text-white\/50 {
+  color: rgba(15, 16, 38, 0.62);
+}
+:root.light .text-white\/55 {
+  color: rgba(15, 16, 38, 0.65);
+}
+:root.light .text-white\/60 {
+  color: rgba(15, 16, 38, 0.7);
+}
+:root.light .text-white\/65 {
+  color: rgba(15, 16, 38, 0.72);
+}
+:root.light .text-white\/70 {
+  color: rgba(15, 16, 38, 0.75);
+}
+:root.light .text-white\/75 {
+  color: rgba(15, 16, 38, 0.78);
+}
+:root.light .text-white\/80 {
+  color: rgba(15, 16, 38, 0.82);
+}
+:root.light .text-white\/85 {
+  color: rgba(15, 16, 38, 0.86);
+}
+:root.light .text-white\/90 {
+  color: rgba(15, 16, 38, 0.9);
+}
+
+/* --- ink-* backgrounds (used for body / panels) --- */
+:root.light .bg-ink-950 {
+  background-color: #f5f6fb;
+}
+:root.light .bg-ink-900 {
+  background-color: #ffffff;
+}
+:root.light .bg-ink-950\/40 {
+  background-color: rgba(245, 246, 251, 0.6);
+}
+:root.light .bg-ink-950\/70 {
+  background-color: rgba(245, 246, 251, 0.78);
+}
+:root.light .bg-ink-900\/60 {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* Hover background overrides for light theme */
+:root.light .hover\:bg-white\/\[0\.06\]:hover {
+  background-color: rgba(15, 16, 38, 0.08);
+}
+:root.light .hover\:bg-white\/\[0\.07\]:hover {
+  background-color: rgba(15, 16, 38, 0.09);
+}
+:root.light .hover\:bg-white\/\[0\.05\]:hover {
+  background-color: rgba(15, 16, 38, 0.07);
+}
+:root.light .hover\:bg-white\/\[0\.08\]:hover {
+  background-color: rgba(15, 16, 38, 0.10);
+}
+:root.light .hover\:border-white\/15:hover {
+  border-color: rgba(15, 16, 38, 0.20);
+}
+:root.light .hover\:border-white\/20:hover {
+  border-color: rgba(15, 16, 38, 0.24);
+}
+:root.light .hover\:border-white\/30:hover {
+  border-color: rgba(15, 16, 38, 0.32);
+}
+:root.light .hover\:border-white\/\[0\.12\]:hover {
+  border-color: rgba(15, 16, 38, 0.18);
+}
+
+/* Ring for ring-ink-950 (used in avatars) */
+:root.light .ring-ink-950 {
+  --tw-ring-color: #ffffff;
+}
+
+/* Logo wordmark stroke in footer */
+:root.light footer [style*="WebkitTextStroke"] {
+  -webkit-text-stroke-color: rgba(10, 10, 30, 0.12) !important;
+}
+
+/* Dim noise overlays in light mode */
+:root.light .bg-noise {
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+}
+
+/* Inputs */
+:root.light input,
+:root.light textarea {
+  caret-color: #06b6d4;
+}
+:root.light .placeholder\:text-white\/35::placeholder {
+  color: rgba(15, 16, 38, 0.45);
+}
+
+/* The opened FAQ card uses a dark gradient that intentionally stays
+   dark in both themes for visual consistency. In light mode, our
+   utility-class inverter would otherwise flip the text inside it to
+   dark, leaving dark-on-dark. Re-assert bright text scoped under
+   `.faq-open`. Selector specificity (0,3,0) beats the global flip. */
+:root.light .faq-open .text-white {
+  color: #ffffff;
+}
+:root.light .faq-open .text-white\/45 {
+  color: rgba(255, 255, 255, 0.45);
+}
+:root.light .faq-open .text-white\/55 {
+  color: rgba(255, 255, 255, 0.55);
+}
+:root.light .faq-open .text-white\/65 {
+  color: rgba(255, 255, 255, 0.65);
+}
+:root.light .faq-open .text-white\/70 {
+  color: rgba(255, 255, 255, 0.70);
+}
+:root.light .faq-open .text-white\/75 {
+  color: rgba(255, 255, 255, 0.75);
+}
+:root.light .faq-open .text-white\/85 {
+  color: rgba(255, 255, 255, 0.85);
+}
+:root.light .faq-open .text-cyan-300 {
+  color: rgb(103 232 249);
+}
